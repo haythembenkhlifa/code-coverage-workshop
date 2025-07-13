@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Post\CreatePostAction;
+use App\Actions\Post\PublishPostAction;
 use App\Actions\Post\UpdatePostAction;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
@@ -92,6 +93,27 @@ class PostController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Post deleted successfully'
+        ]);
+    }
+
+    /**
+     * Publish the specified post.
+     */
+    public function publish(Post $post, PublishPostAction $action): JsonResponse
+    {
+        $published = $action->execute($post);
+
+        if (!$published) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to publish post'
+            ], 500);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Post published successfully',
+            'data' => new PostResource($published)
         ]);
     }
 }

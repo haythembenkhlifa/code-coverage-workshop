@@ -58,4 +58,37 @@ class PostQueryBuilder
     {
         return $this->query;
     }
+
+    /**
+     * Filter posts that are published (published_at is not null).
+     */
+    public function onlyPublished(): self
+    {
+        $this->query->whereNotNull('published_at');
+
+        return $this;
+    }
+
+    /**
+     * Filter posts that are not published (published_at is null).
+     */
+    public function onlyUnpublished(): self
+    {
+        $this->query->whereNull('published_at');
+
+        return $this;
+    }
+
+    /**
+     * Search posts by title or content.
+     */
+    public function search(string $term): self
+    {
+        $this->query->where(function ($q) use ($term) {
+            $q->where('title', 'like', "%$term%")
+                ->orWhere('content', 'like', "%$term%");
+        });
+
+        return $this;
+    }
 }

@@ -9,3 +9,4 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::apiResource('posts', PostController::class);
+Route::post('posts/{post}/publish', [PostController::class, 'publish'])->name('posts.publish');

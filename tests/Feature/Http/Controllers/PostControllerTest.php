@@ -455,4 +455,50 @@ describe('PostController', function () {
                 ]);
         });
     });
+
+    describe('publish method', function () {
+        it('publishes a post successfully', function () {
+            // Arrange
+            $user = User::factory()->create();
+            $post = Post::factory()->create(['user_id' => $user->id, 'published_at' => null]);
+
+            // Act
+            $response = $this->postJson(route('posts.publish', $post));
+
+            // Assert
+            $response->assertStatus(200)
+                ->assertJson([
+                    'success' => true,
+                    'message' => 'Post published successfully',
+                ]);
+            $this->assertDatabaseHas('posts', [
+                'id' => $post->id,
+                // published_at should not be null
+            ]);
+        });
+
+        it('returns 500 if publish fails', function () {
+            // Arrange
+            $user = User::factory()->create();
+            $post = Post::factory()->create(['user_id' => $user->id, 'published_at' => null]);
+
+            // Simulate failure by mocking action to return null
+            $this->instance(
+                \App\Actions\Post\PublishPostAction::class,
+                Mockery::mock(\App\Actions\Post\PublishPostAction::class, function (MockInterface $mock) {
+                    $mock->shouldReceive('execute')->once()->andReturn(null);
+                })
+            );
+
+            // Act
+            $response = $this->postJson(route('posts.publish', $post));
+
+            // Assert
+            $response->assertStatus(500)
+                ->assertJson([
+                    'success' => false,
+                    'message' => 'Failed to publish post',
+                ]);
+        });
+    });
 });

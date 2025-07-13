@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Events\PostCreated;
 use App\Events\PostUpdated;
+use App\Events\PostPublished;
 use App\Listeners\HandlePostCreated;
 use App\Listeners\HandlePostUpdated;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -21,6 +22,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         PostUpdated::class => [
             HandlePostUpdated::class,
+        ],
+        PostPublished::class => [
+            // Add listeners here if needed
         ],
     ];
 
