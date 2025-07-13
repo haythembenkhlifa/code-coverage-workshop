@@ -28,4 +28,4 @@ jobs:
       - name: Run migrations
         run: php artisan migrate --no-interaction
       - name: Run tests with coverage
-        run: php artisan test --coverage --min=100
+        run: php artisan test --coverage

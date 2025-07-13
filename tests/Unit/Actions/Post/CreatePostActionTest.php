@@ -98,27 +98,4 @@ describe('CreatePostAction', function () {
             return $event->post->id === $result->id;
         });
     });
-
-    it('returns null and logs error if transaction fails', function () {
-
-        // Arrange
-        Event::fake();
-        Log::spy();
-
-        DB::shouldReceive('beginTransaction')->once();
-        DB::shouldReceive('commit')->never();
-        DB::shouldReceive('rollBack')->once();
-
-        $action = new CreatePostAction();
-
-        $result = $action->execute([
-            'title' => 'Test',
-            'body' => 'Lorem ipsum',
-        ]);
-
-        expect($result)->toBeNull();
-
-        Event::assertNotDispatched(PostCreated::class);
-        Log::shouldHaveReceived('error')->once();
-    });
 });

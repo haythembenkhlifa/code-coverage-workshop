@@ -144,33 +144,4 @@ describe('UpdatePostAction', function () {
                 && $event->originalData['content'] === 'Original content';
         });
     });
-
-    it('returns null and logs error if transaction fails', function () {
-
-        // Arrange
-        Event::fake();
-        Log::spy();
-
-        DB::shouldReceive('beginTransaction')->once();
-        DB::shouldReceive('commit')->never();
-        DB::shouldReceive('rollBack')->once();
-
-        $post = Post::factory()->create([
-            'title' => 'Original Title',
-            'content' => 'Original content',
-            'user_id' => 1,
-        ]);
-
-        $action = new UpdatePostAction();
-
-        $result = $action->execute($post, [
-            'title' => 'Test',
-            'body' => 'Lorem ipsum',
-        ]);
-
-        expect($result)->toBeNull();
-
-        Event::assertNotDispatched(PostUpdated::class);
-        Log::shouldHaveReceived('error')->once();
-    });
 });

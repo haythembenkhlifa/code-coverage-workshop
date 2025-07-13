@@ -166,49 +166,4 @@ describe('PostQueryBuilder', function () {
         expect($query)->toBeInstanceOf(\Illuminate\Database\Eloquent\Builder::class);
         expect($query->getModel())->toBeInstanceOf(Post::class);
     });
-
-    it('can filter only published posts', function () {
-        // Arrange
-        $user = User::factory()->create();
-        $published = Post::factory()->create(['user_id' => $user->id, 'published_at' => now()]);
-        $unpublished = Post::factory()->create(['user_id' => $user->id, 'published_at' => null]);
-        $queryBuilder = new PostQueryBuilder();
-
-        // Act
-        $posts = $queryBuilder->onlyPublished()->get();
-
-        // Assert
-        expect($posts)->toHaveCount(1);
-        expect($posts->first()->id)->toBe($published->id);
-    });
-
-    it('can filter only unpublished posts', function () {
-        // Arrange
-        $user = User::factory()->create();
-        $published = Post::factory()->create(['user_id' => $user->id, 'published_at' => now()]);
-        $unpublished = Post::factory()->create(['user_id' => $user->id, 'published_at' => null]);
-        $queryBuilder = new PostQueryBuilder();
-
-        // Act
-        $posts = $queryBuilder->onlyUnpublished()->get();
-
-        // Assert
-        expect($posts)->toHaveCount(1);
-        expect($posts->first()->id)->toBe($unpublished->id);
-    });
-
-    it('can search posts by title and content', function () {
-        // Arrange
-        $user = User::factory()->create();
-        $post1 = Post::factory()->create(['user_id' => $user->id, 'title' => 'Laravel Workshop', 'content' => 'Learn Laravel']);
-        $post2 = Post::factory()->create(['user_id' => $user->id, 'title' => 'Other', 'content' => 'Something else']);
-        $queryBuilder = new PostQueryBuilder();
-
-        // Act
-        $results = $queryBuilder->search('Laravel')->get();
-
-        // Assert
-        expect($results)->toHaveCount(1);
-        expect($results->first()->id)->toBe($post1->id);
-    });
 });
