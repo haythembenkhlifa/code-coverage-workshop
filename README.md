@@ -1,7 +1,5 @@
 # Laravel Code Coverage Workshop
 
-This is a simple Laravel project designed for a workshop to demonstrate best practices in API development, testing, and code coverage.
-
 ## Installation
 
 1. Clone the repository:
