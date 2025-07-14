@@ -20,22 +20,3 @@
     ```
 
 3. Access the application at [http://localhost](http://localhost).
-
-## Database Setup
-
-This project uses SQLite for simplicity.
-
-1. Ensure the following lines are in your `.env` file:
-    ```env
-    DB_CONNECTION=sqlite
-    DB_DATABASE=/var/www/html/database/database.sqlite
-    ```
-2. Create the database file if it does not exist:
-    ```bash
-    touch database/database.sqlite
-    ```
-3. Run migrations and seeders:
-    ```bash
-    sail artisan migrate
-    sail artisan db:seed
-    ```
