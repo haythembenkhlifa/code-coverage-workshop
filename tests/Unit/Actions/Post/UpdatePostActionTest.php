@@ -151,26 +151,36 @@ describe('UpdatePostAction', function () {
         Event::fake();
         Log::spy();
 
-        DB::shouldReceive('beginTransaction')->once();
-        DB::shouldReceive('commit')->never();
-        DB::shouldReceive('rollBack')->once();
+        // Mock DB::transaction to throw an exception
+        DB::shouldReceive('transaction')
+            ->once()
+            ->andThrow(new \Exception('Transaction failed'));
 
+        $user = User::factory()->create();
         $post = Post::factory()->create([
             'title' => 'Original Title',
             'content' => 'Original content',
-            'user_id' => 1,
+            'user_id' => $user->id,
         ]);
 
         $action = new UpdatePostAction();
 
+        // Action
         $result = $action->execute($post, [
             'title' => 'Test',
-            'body' => 'Lorem ipsum',
+            'content' => 'Updated content',
         ]);
 
+        // Assert
         expect($result)->toBeNull();
-
         Event::assertNotDispatched(PostUpdated::class);
-        Log::shouldHaveReceived('error')->once();
+        Log::shouldHaveReceived('error')->once()->with('Failed to update post', [
+            'post_id' => $post->id,
+            'error' => 'Transaction failed',
+            'data' => [
+                'title' => 'Test',
+                'content' => 'Updated content',
+            ],
+        ]);
     });
 });

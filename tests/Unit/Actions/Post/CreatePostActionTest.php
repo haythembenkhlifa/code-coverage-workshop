@@ -105,20 +105,30 @@ describe('CreatePostAction', function () {
         Event::fake();
         Log::spy();
 
-        DB::shouldReceive('beginTransaction')->once();
-        DB::shouldReceive('commit')->never();
-        DB::shouldReceive('rollBack')->once();
+        // Mock DB::transaction to throw an exception
+        DB::shouldReceive('transaction')
+            ->once()
+            ->andThrow(new \Exception('Transaction failed'));
 
         $action = new CreatePostAction();
 
+        // Action
         $result = $action->execute([
             'title' => 'Test',
-            'body' => 'Lorem ipsum',
+            'content' => 'Test content',
+            'user_id' => 1,
         ]);
 
+        // Assert
         expect($result)->toBeNull();
-
         Event::assertNotDispatched(PostCreated::class);
-        Log::shouldHaveReceived('error')->once();
+        Log::shouldHaveReceived('error')->once()->with('Failed to create post', [
+            'error' => 'Transaction failed',
+            'data' => [
+                'title' => 'Test',
+                'content' => 'Test content',
+                'user_id' => 1,
+            ],
+        ]);
     });
 });

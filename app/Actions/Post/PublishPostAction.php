@@ -22,6 +22,7 @@ class PublishPostAction
                     event(new PostPublished($post));
                     return $post;
                 }
+
             });
         } catch (\Exception $e) {
             Log::error('Failed to publish post', [
