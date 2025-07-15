@@ -7,6 +7,7 @@ use App\Events\PostUpdated;
 use App\Events\PostPublished;
 use App\Listeners\HandlePostCreated;
 use App\Listeners\HandlePostUpdated;
+use App\Listeners\HandlePostPublished;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
@@ -24,7 +25,7 @@ class EventServiceProvider extends ServiceProvider
             HandlePostUpdated::class,
         ],
         PostPublished::class => [
-            // Add listeners here if needed
+            HandlePostPublished::class,
         ],
     ];
 

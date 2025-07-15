@@ -5,18 +5,20 @@
 1. Clone the repository:
 
     ```bash
-    git clone <repository-url>
-    cd code-coverage
+    gh repo clone haythembenkhlifa/code-coverage-workshop
+    cd code-coverage-workshop
     ```
 
-2. Set up the environment:
+2. Install composer:
+
+    ```bash
+    composer install
+    ```
+
+3. Set up the environment:
 
     ```bash
     cp .env.example .env
     ./vendor/bin/sail up -d
-    sail artisan key:generate
-    sail artisan migrate
-    sail artisan db:seed
+    ./vendor/bin/sail artisan key:generate
     ```
-
-3. Access the application at [http://localhost](http://localhost).
