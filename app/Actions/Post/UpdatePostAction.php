@@ -15,30 +15,19 @@ class UpdatePostAction
     public function execute(Post $post, array $validatedData): ?Post
     {
         try {
-            DB::beginTransaction();
-
-            // Store original data before update
-            $originalData = $post->getOriginal();
-
-            // Update the post
-            $post->update($validatedData);
-
-            // Dispatch the PostUpdated event
-            PostUpdated::dispatch($post, $originalData);
-
-            // Commit the transaction
-            DB::commit();
-
-            return $post;
+            return DB::transaction(function () use ($post, $validatedData) {
+                $originalData = $post->getOriginal();
+                if ($post->update($validatedData)) {
+                    event(new PostUpdated($post, $originalData));
+                    return $post;
+                }
+            });
         } catch (\Exception $e) {
-            // Rollback the transaction in case of error
-            DB::rollBack();
             Log::error('Failed to update post', [
-                'error' => $e->getMessage(),
                 'post_id' => $post->id,
+                'error' => $e->getMessage(),
                 'data' => $validatedData,
             ]);
-
             return null;
         }
     }

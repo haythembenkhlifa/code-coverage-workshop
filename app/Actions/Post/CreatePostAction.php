@@ -15,21 +15,14 @@ class CreatePostAction
     public function execute(array $validatedData): ?Post
     {
         try {
-            DB::beginTransaction();
-
-            // Create the post
-            $post = Post::create($validatedData);
-
-            // Dispatch the PostCreated event
-            PostCreated::dispatch($post);
-
-            // Commit the transaction
-            DB::commit();
-
-            return $post;
+            return DB::transaction(function () use ($validatedData) {
+                $post = Post::create($validatedData);
+                if ($post) {
+                    event(new PostCreated($post));
+                    return $post;
+                }
+            });
         } catch (\Exception $e) {
-            // Rollback the transaction in case of error
-            DB::rollBack();
             Log::error('Failed to create post', [
                 'error' => $e->getMessage(),
                 'data' => $validatedData,
