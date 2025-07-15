@@ -1,6 +1,7 @@
 <?php
 
 use App\Actions\Post\CreatePostAction;
+use App\Actions\Post\PublishPostAction;
 use App\Actions\Post\UpdatePostAction;
 use App\Models\Post;
 use App\Models\User;
@@ -482,13 +483,12 @@ describe('PostController', function () {
             $user = User::factory()->create();
             $post = Post::factory()->create(['user_id' => $user->id, 'published_at' => null]);
 
-            // Simulate failure by mocking action to return null
-            $this->instance(
-                \App\Actions\Post\PublishPostAction::class,
-                Mockery::mock(\App\Actions\Post\PublishPostAction::class, function (MockInterface $mock) {
-                    $mock->shouldReceive('execute')->once()->andReturn(null);
-                })
-            );
+
+            $this->mock(PublishPostAction::class, function (MockInterface $mock) {
+                $mock->shouldReceive('execute')->once()->andReturn(null);
+            });
+
+
 
             // Act
             $response = $this->postJson(route('posts.publish', $post));
